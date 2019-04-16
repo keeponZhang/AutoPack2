@@ -1,0 +1,55 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    
+    repositories {
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        google()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+ext {
+    compileSdkVersion = 26
+    buildToolsVersion = "26.0.2"
+    minSdkVersion = 16
+    targetSdkVersion = 25
+    SUPPORT_LIBRARY_VERSION = '26.0.0'
+    versionCode = 1
+    versionName = "v1.0.1"
+    //gradle assembleRelease
+    storeFile = file("zhang.keystore")
+    def console = System.console()
+    def password = console == null ? "123456" : console.readLine("Enter store password: ");
+    storePassword = password
+    keyAlias = "zhang"
+    keyPassword = password
+
+    debugstoreFile = file("debug.keystore")
+    def console2 = System.console()
+    def password2 = console2 == null ? "android" : console.readLine("Enter store password: ");
+    debugStorePassword = password2
+    debugKeyPassword = password2
+    debugKeyAlias = "androiddebugkey"
+
+    outputDir = "E:\\autoPack"
+    outputFilePath = "workspace2" + "\\" + versionName
+//    outputDir = "Android"
+//    outputFilePath = "autoPack" + "\\" + versionName
+}
+

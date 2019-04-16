@@ -1,0 +1,64 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    defaultConfig {
+        applicationId "com.zhang.autopack"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    //签名
+    signingConfigs {
+        releaseConfig {
+            storeFile rootProject.ext.storeFile
+            storePassword rootProject.ext.storePassword
+            keyAlias rootProject.ext.keyAlias
+            keyPassword rootProject.ext.keyPassword
+        }
+        debugConfig {
+            storeFile rootProject.ext.debugstoreFile
+            storePassword rootProject.ext.debugStorePassword
+            keyAlias rootProject.ext.debugKeyAlias
+            keyPassword rootProject.ext.debugKeyPassword
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            //Zipalign优化
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.releaseConfig
+
+            android.applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def outputFile = output.outputFile
+                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                        def fileName = outputFile.name.replace('.apk', "-${versionName}.apk")
+
+                        def fileNameReal = fileName.substring(fileName.indexOf("-") + 1)
+                        if (variant.buildType.name.toLowerCase().contains("release")) {
+                            variant.getPackageApplication().outputDirectory = new File(rootProject.ext.outputDir)
+                            output.outputFileName = new File(rootProject.ext.outputFilePath, fileNameReal.replace("-release", ""))
+                        } else if (variant.buildType.name.toLowerCase().contains("debug")) {
+                            output.outputFileName = new File(fileNameReal)
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+}
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    api "com.android.support:appcompat-v7:${rootProject.ext.SUPPORT_LIBRARY_VERSION}"
+    testCompile 'junit:junit:4.12'
+}
